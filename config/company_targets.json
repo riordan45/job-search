@@ -1,0 +1,232 @@
+[
+  {
+    "name": "arbeitnow-de",
+    "company_name": "Arbeitnow",
+    "adapter": "arbeitnow",
+    "country": "DE",
+    "employer_class": "other",
+    "priority_weight": 2,
+    "careers_url": "https://www.arbeitnow.com/",
+    "max_pages": 2
+  },
+  {
+    "name": "demo-google",
+    "company_name": "Google",
+    "is_demo": true,
+    "adapter": "mock",
+    "country": "CH",
+    "employer_class": "big_tech",
+    "priority_weight": 5,
+    "careers_url": "https://careers.google.com/",
+    "jobs": [
+      {
+        "id": "g-ml-1",
+        "title": "Senior Software Engineer, ML Infrastructure",
+        "url": "https://careers.google.com/",
+        "location_text": "Zurich, Switzerland",
+        "posted_at": "2026-03-01T09:00:00+00:00",
+        "description_text": "Build LLM infrastructure, backend APIs, and distributed systems on Kubernetes.",
+        "requirements_text": "Python, machine learning systems, distributed systems, Kubernetes."
+      }
+    ]
+  },
+  {
+    "name": "google",
+    "company_name": "Google",
+    "adapter": "google_careers",
+    "country": "CH",
+    "employer_class": "big_tech",
+    "source_kind": "direct_company_page",
+    "priority_weight": 6,
+    "careers_url": "https://www.google.com/about/careers/applications/jobs/results/",
+    "query": "software engineer",
+    "search_locations": ["Switzerland", "Germany", "Netherlands", "Romania"],
+    "max_pages": 3
+  },
+  {
+    "name": "amazon",
+    "company_name": "Amazon",
+    "adapter": "amazon_jobs",
+    "country": "DE",
+    "employer_class": "big_tech",
+    "source_kind": "direct_company_page",
+    "priority_weight": 6,
+    "careers_url": "https://www.amazon.jobs/en/",
+    "queries": [
+      "software engineer",
+      "software development engineer",
+      "machine learning",
+      "applied scientist"
+    ],
+    "target_country_codes": ["DEU", "CHE", "NLD", "ROU"],
+    "page_size": 10,
+    "max_pages": 10
+  },
+  {
+    "name": "stripe",
+    "company_name": "Stripe",
+    "adapter": "greenhouse",
+    "board_token": "stripe",
+    "country": "NL",
+    "employer_class": "big_tech",
+    "priority_weight": 5,
+    "careers_url": "https://stripe.com/jobs"
+  },
+  {
+    "name": "demo-datadog",
+    "company_name": "Datadog",
+    "is_demo": true,
+    "adapter": "mock",
+    "country": "DE",
+    "employer_class": "enterprise",
+    "priority_weight": 4,
+    "careers_url": "https://careers.datadoghq.com/",
+    "jobs": [
+      {
+        "id": "d-platform-1",
+        "title": "Software Engineer, Platform",
+        "url": "https://careers.datadoghq.com/",
+        "location_text": "Berlin, Germany",
+        "posted_at": "2026-03-02T09:00:00+00:00",
+        "description_text": "Work on backend platform systems, APIs, observability, and cloud infrastructure.",
+        "requirements_text": "Python or Go, distributed systems, backend services."
+      }
+    ]
+  },
+  {
+    "name": "apple",
+    "company_name": "Apple",
+    "adapter": "apple_jobs",
+    "country": "DE",
+    "employer_class": "big_tech",
+    "source_kind": "direct_company_page",
+    "priority_weight": 6,
+    "careers_url": "https://jobs.apple.com/en-us",
+    "max_pages": 20
+  },
+  {
+    "name": "datadog",
+    "company_name": "Datadog",
+    "adapter": "greenhouse",
+    "board_token": "datadog",
+    "country": "DE",
+    "employer_class": "enterprise",
+    "priority_weight": 4,
+    "careers_url": "https://careers.datadoghq.com/"
+  },
+  {
+    "name": "mongodb",
+    "company_name": "MongoDB",
+    "adapter": "greenhouse",
+    "board_token": "mongodb",
+    "country": "DE",
+    "employer_class": "enterprise",
+    "priority_weight": 4,
+    "careers_url": "https://www.mongodb.com/careers"
+  },
+  {
+    "name": "elastic",
+    "company_name": "Elastic",
+    "adapter": "greenhouse",
+    "board_token": "elastic",
+    "country": "DE",
+    "employer_class": "enterprise",
+    "priority_weight": 4,
+    "careers_url": "https://jobs.elastic.co/"
+  },
+  {
+    "name": "cloudflare",
+    "company_name": "Cloudflare",
+    "adapter": "greenhouse",
+    "board_token": "cloudflare",
+    "country": "DE",
+    "employer_class": "big_tech",
+    "priority_weight": 4,
+    "careers_url": "https://www.cloudflare.com/careers/"
+  },
+  {
+    "name": "demo-optiver",
+    "company_name": "Optiver",
+    "is_demo": true,
+    "adapter": "mock",
+    "country": "NL",
+    "employer_class": "finance",
+    "priority_weight": 5,
+    "careers_url": "https://optiver.com/working-at-optiver/career-opportunities/",
+    "jobs": [
+      {
+        "id": "o-backend-1",
+        "title": "Backend Software Engineer",
+        "url": "https://optiver.com/working-at-optiver/career-opportunities/",
+        "location_text": "Amsterdam, Netherlands",
+        "posted_at": "2026-03-03T09:00:00+00:00",
+        "description_text": "Build low-latency backend services and data pipelines for trading systems.",
+        "requirements_text": "Backend engineering, Python, data systems."
+      }
+    ]
+  },
+  {
+    "name": "adyen",
+    "company_name": "Adyen",
+    "adapter": "greenhouse",
+    "board_token": "adyen",
+    "country": "NL",
+    "employer_class": "finance",
+    "priority_weight": 5,
+    "careers_url": "https://www.adyen.com/careers"
+  },
+  {
+    "name": "n26",
+    "company_name": "N26",
+    "adapter": "greenhouse",
+    "board_token": "n26",
+    "country": "DE",
+    "employer_class": "finance",
+    "priority_weight": 5,
+    "careers_url": "https://n26.com/en-eu/careers"
+  },
+  {
+    "name": "imc",
+    "company_name": "IMC",
+    "adapter": "greenhouse",
+    "board_token": "imc",
+    "country": "NL",
+    "employer_class": "finance",
+    "priority_weight": 5,
+    "careers_url": "https://www.imc.com/eu/careers/"
+  },
+  {
+    "name": "delivery-hero",
+    "company_name": "Delivery Hero",
+    "adapter": "smartrecruiters",
+    "company_identifier": "DeliveryHero",
+    "country": "DE",
+    "employer_class": "enterprise",
+    "priority_weight": 3,
+    "careers_url": "https://careers.deliveryhero.com/",
+    "limit": 100
+  },
+  {
+    "name": "remote",
+    "company_name": "Remote",
+    "adapter": "greenhouse",
+    "board_token": "remotecom",
+    "country": "RO",
+    "employer_class": "startup",
+    "priority_weight": 3,
+    "careers_url": "https://remote.com/careers"
+  },
+  {
+    "name": "nvidia",
+    "company_name": "NVIDIA",
+    "adapter": "workday",
+    "country": "CH",
+    "employer_class": "big_tech",
+    "source_kind": "direct_company_page",
+    "priority_weight": 6,
+    "careers_url": "https://nvidia.wd5.myworkdayjobs.com/NVIDIAExternalCareerSite",
+    "api_url": "https://nvidia.wd5.myworkdayjobs.com/wday/cxs/nvidia/NVIDIAExternalCareerSite/jobs",
+    "limit": 20,
+    "target_country_names": ["Germany", "Netherlands", "Romania", "Switzerland"]
+  }
+]

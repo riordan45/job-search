@@ -1,0 +1,37 @@
+{
+  "target_countries": ["CH", "DE", "NL", "RO"],
+  "priority_keywords": [
+    "machine learning",
+    "backend",
+    "python",
+    "distributed systems",
+    "kubernetes",
+    "platform",
+    "llm",
+    "full stack",
+    "api",
+    "data pipeline",
+    "quant",
+    "quantitative",
+    "trading"
+  ],
+  "excluded_keywords": [
+    "account executive",
+    "sales",
+    "marketing",
+    "hr",
+    "people operations",
+    "recruiter"
+  ],
+  "required_role_tags_any": [
+    "ml",
+    "backend",
+    "full_stack",
+    "platform",
+    "kubernetes",
+    "llm_infra",
+    "distributed_systems",
+    "data",
+    "finance"
+  ]
+}
