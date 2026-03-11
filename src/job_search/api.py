@@ -55,7 +55,7 @@ def create_app(service: JobSearchService | None = None) -> FastAPI:
         return ListResponse(items=service.list_runs())
 
     @app.get("/runs/status")
-    def run_status() -> dict[str, bool]:
+    def run_status() -> dict:
         return service.run_status()
 
     @app.get("/jobs")
@@ -100,12 +100,19 @@ def create_app(service: JobSearchService | None = None) -> FastAPI:
         return service.save_search(search)
 
     @app.get("/sources")
-    def list_sources():
-        return ListResponse(items=service.list_sources())
+    def list_sources(
+        include_demo: bool = Query(default=False),
+        include_disabled: bool = Query(default=False),
+    ):
+        return ListResponse(items=service.list_sources(include_demo=include_demo, include_disabled=include_disabled))
 
     @app.post("/sources")
     def create_source(source: SourceConfigCreate):
         return service.create_source(source)
+
+    @app.put("/sources/{source_name}")
+    def update_source(source_name: str, source: SourceConfigCreate):
+        return service.update_source(source_name, source)
 
     @app.get("/settings/search-profile")
     def get_search_profile():

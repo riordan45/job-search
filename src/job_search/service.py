@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from threading import Event, Lock, Thread
 from time import sleep
 
@@ -18,7 +19,7 @@ from job_search.models import (
     SourceConfigCreate,
 )
 from job_search.repository import Repository
-from job_search.scoring import matches_search_profile
+from job_search.scoring import extract_language_signals, matches_search_profile
 
 
 class JobSearchService:
@@ -72,8 +73,25 @@ class JobSearchService:
     def list_runs(self):
         return self.repository.list_runs()
 
-    def run_status(self) -> dict[str, bool]:
-        return {"running": self.is_run_in_progress()}
+    def run_status(self) -> dict:
+        running = self.is_run_in_progress()
+        runs = self.repository.list_runs()
+        current_started_at = _current_run_started_at(runs) if running else None
+        current_runs = [
+            run
+            for run in runs
+            if current_started_at and run.started_at >= current_started_at
+        ]
+        running_sources = [run.source_name for run in current_runs if run.status == "running"]
+        finished_runs = [run for run in current_runs if run.status != "running"]
+        failed_runs = [run.source_name for run in current_runs if run.status in {"failed", "abandoned"}]
+        return {
+            "running": running,
+            "running_sources": running_sources,
+            "completed_sources": len(finished_runs),
+            "total_sources": len(current_runs) if current_runs else 0,
+            "failed_sources": failed_runs,
+        }
 
     def list_filters(self):
         return {
@@ -98,11 +116,37 @@ class JobSearchService:
             "saved_searches": self.repository.list_saved_searches(),
         }
 
-    def list_sources(self) -> list[dict]:
-        return load_active_company_targets()
+    def list_sources(self, *, include_demo: bool = False, include_disabled: bool = False) -> list[dict]:
+        targets = load_company_targets() if include_disabled else load_active_company_targets(include_demo=include_demo)
+        if include_disabled and not include_demo:
+            targets = [target for target in targets if not target.get("is_demo")]
+
+        metrics = self.repository.source_metrics()
+        items: list[dict] = []
+        for target in targets:
+            source_metrics = {
+                "run_count": 0,
+                "success_rate": 0.0,
+                "last_run_status": None,
+                "last_run_started_at": None,
+                "discovered_total": 0,
+                "inserted_total": 0,
+                "updated_total": 0,
+                "skipped_total": 0,
+                "retained_job_count": 0,
+                "yield_rate": 0.0,
+                **metrics.get(target["name"], {}),
+            }
+            items.append({**target, **source_metrics, "enabled": target.get("enabled", True)})
+        return items
 
     def create_source(self, source: SourceConfigCreate) -> dict:
         return save_local_company_target(source.model_dump(mode="json"))
+
+    def update_source(self, source_name: str, source: SourceConfigCreate) -> dict:
+        payload = source.model_dump(mode="json")
+        payload["name"] = source_name
+        return save_local_company_target(payload)
 
     def save_search(self, search: SavedSearchCreate) -> dict:
         return self.repository.save_search(search.name, search.filters)
@@ -118,7 +162,15 @@ class JobSearchService:
     def _revalidate_jobs(self) -> None:
         profile = load_profile()
         for job in self.repository.list_jobs(include_inactive=True):
-            self.repository.set_job_active(job.id, is_active=matches_search_profile(job, profile))
+            self.repository.refresh_job_profile_fields(
+                job.id,
+                is_active=matches_search_profile(job, profile),
+                language_signals=extract_language_signals(
+                    job.title,
+                    job.description_text,
+                    job.requirements_text,
+                ),
+            )
 
     def ensure_scheduler(self, interval_seconds: int = 86400) -> None:
         if self._scheduler_thread and self._scheduler_thread.is_alive():
@@ -135,3 +187,10 @@ class JobSearchService:
 
     def stop_scheduler(self) -> None:
         self._scheduler_stop.set()
+
+
+def _current_run_started_at(runs: list) -> datetime | None:
+    running_runs = [run for run in runs if run.status == "running"]
+    if not running_runs:
+        return None
+    return min(run.started_at for run in running_runs)

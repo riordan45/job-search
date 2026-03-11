@@ -31,11 +31,14 @@ class ApplicationStatus(StrEnum):
 
 class RoleTag(StrEnum):
     ML = "ml"
+    APPLIED_SCIENTIST = "applied_scientist"
     BACKEND = "backend"
+    FORWARD_DEPLOYMENT = "forward_deployment"
     FULL_STACK = "full_stack"
     PLATFORM = "platform"
     KUBERNETES = "kubernetes"
     LLM_INFRA = "llm_infra"
+    RESEARCH_ENGINEERING = "research_engineering"
     DISTRIBUTED_SYSTEMS = "distributed_systems"
     DATA = "data"
     FINANCE = "finance"

@@ -23,8 +23,9 @@ def main() -> None:
     elif args.command == "seed-demo":
         service.run_once(source_names=["demo-google", "demo-datadog", "demo-optiver"])
     elif args.command == "show-sources":
-        for source in service.list_sources():
-            print(f'{source["name"]}: {source["company_name"]} [{source["adapter"]}]')
+        for source in service.list_sources(include_disabled=True, include_demo=True):
+            status = "enabled" if source.get("enabled", True) else "disabled"
+            print(f'{source["name"]}: {source["company_name"]} [{source["adapter"]}] ({status})')
 
 
 if __name__ == "__main__":

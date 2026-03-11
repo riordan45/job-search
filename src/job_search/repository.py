@@ -5,6 +5,7 @@ import sqlite3
 from contextlib import contextmanager
 from datetime import date, datetime, timezone
 from pathlib import Path
+from threading import RLock
 
 from job_search.config import DB_PATH
 from job_search.enums import ApplicationStatus, Country, EmployerClass
@@ -19,11 +20,12 @@ class Repository:
     def __init__(self, db_path: Path = DB_PATH):
         self.db_path = db_path
         self.db_path.parent.mkdir(exist_ok=True)
+        self._write_lock = RLock()
         self.initialize()
 
     @contextmanager
     def connect(self):
-        connection = sqlite3.connect(self.db_path)
+        connection = sqlite3.connect(self.db_path, timeout=30)
         connection.row_factory = sqlite3.Row
         try:
             yield connection
@@ -32,7 +34,8 @@ class Repository:
             connection.close()
 
     def initialize(self) -> None:
-        with self.connect() as connection:
+        with self._write_lock, self.connect() as connection:
+            connection.execute("PRAGMA journal_mode=WAL")
             connection.executescript(
                 """
                 CREATE TABLE IF NOT EXISTS jobs (
@@ -119,7 +122,7 @@ class Repository:
 
     def create_run(self, source_name: str) -> int:
         started_at = utcnow().isoformat()
-        with self.connect() as connection:
+        with self._write_lock, self.connect() as connection:
             cursor = connection.execute(
                 "INSERT INTO source_runs (source_name, status, started_at) VALUES (?, ?, ?)",
                 (source_name, "running", started_at),
@@ -137,7 +140,7 @@ class Repository:
         skipped_count: int = 0,
         error_text: str | None = None,
     ) -> None:
-        with self.connect() as connection:
+        with self._write_lock, self.connect() as connection:
             connection.execute(
                 """
                 UPDATE source_runs
@@ -157,7 +160,7 @@ class Repository:
             )
 
     def mark_running_runs_abandoned(self, error_text: str = "service restarted before run finished") -> int:
-        with self.connect() as connection:
+        with self._write_lock, self.connect() as connection:
             cursor = connection.execute(
                 """
                 UPDATE source_runs
@@ -171,7 +174,7 @@ class Repository:
     def upsert_job(self, job: NormalizedJob) -> tuple[int, str]:
         now = utcnow().isoformat()
         fingerprint = _fingerprint(job.company, job.title, job.country.value, job.location_text)
-        with self.connect() as connection:
+        with self._write_lock, self.connect() as connection:
             existing = connection.execute(
                 """
                 SELECT * FROM jobs
@@ -312,10 +315,17 @@ class Repository:
         )
 
     def set_job_active(self, job_id: int, *, is_active: bool) -> None:
-        with self.connect() as connection:
+        with self._write_lock, self.connect() as connection:
             connection.execute(
                 "UPDATE jobs SET is_active = ?, updated_at = ? WHERE id = ?",
                 (1 if is_active else 0, utcnow().isoformat(), job_id),
+            )
+
+    def refresh_job_profile_fields(self, job_id: int, *, is_active: bool, language_signals: list[str]) -> None:
+        with self._write_lock, self.connect() as connection:
+            connection.execute(
+                "UPDATE jobs SET is_active = ?, language_signals = ?, updated_at = ? WHERE id = ?",
+                (1 if is_active else 0, json.dumps(language_signals), utcnow().isoformat(), job_id),
             )
 
     def get_job(self, job_id: int) -> JobRecord | None:
@@ -339,7 +349,7 @@ class Repository:
         self, job_id: int, *, status: ApplicationStatus, notes: str | None, follow_up_date: date | None
     ) -> ApplicationRecord:
         now = utcnow().isoformat()
-        with self.connect() as connection:
+        with self._write_lock, self.connect() as connection:
             connection.execute(
                 """
                 UPDATE applications
@@ -378,6 +388,88 @@ class Repository:
             for row in rows
         ]
 
+    def source_metrics(self) -> dict[str, dict]:
+        with self.connect() as connection:
+            rows = connection.execute(
+                """
+                WITH source_names AS (
+                    SELECT source_name FROM source_runs
+                    UNION
+                    SELECT source_name FROM jobs
+                ),
+                job_counts AS (
+                    SELECT source_name, COUNT(*) AS retained_job_count
+                    FROM jobs
+                    GROUP BY source_name
+                ),
+                run_totals AS (
+                    SELECT
+                        source_name,
+                        COUNT(*) AS run_count,
+                        SUM(CASE WHEN status = 'success' THEN 1 ELSE 0 END) AS success_count,
+                        SUM(discovered_count) AS discovered_total,
+                        SUM(inserted_count) AS inserted_total,
+                        SUM(updated_count) AS updated_total,
+                        SUM(skipped_count) AS skipped_total
+                    FROM source_runs
+                    GROUP BY source_name
+                ),
+                latest_runs AS (
+                    SELECT source_name, status, started_at
+                    FROM (
+                        SELECT
+                            source_name,
+                            status,
+                            started_at,
+                            ROW_NUMBER() OVER (
+                                PARTITION BY source_name
+                                ORDER BY started_at DESC, id DESC
+                            ) AS row_number
+                        FROM source_runs
+                    )
+                    WHERE row_number = 1
+                )
+                SELECT
+                    source_names.source_name AS source_name,
+                    COALESCE(run_count, 0) AS run_count,
+                    COALESCE(success_count, 0) AS success_count,
+                    COALESCE(discovered_total, 0) AS discovered_total,
+                    COALESCE(inserted_total, 0) AS inserted_total,
+                    COALESCE(updated_total, 0) AS updated_total,
+                    COALESCE(skipped_total, 0) AS skipped_total,
+                    COALESCE(retained_job_count, 0) AS retained_job_count,
+                    latest_runs.status AS last_run_status,
+                    latest_runs.started_at AS last_run_started_at
+                FROM source_names
+                LEFT JOIN run_totals ON run_totals.source_name = source_names.source_name
+                LEFT JOIN job_counts ON job_counts.source_name = source_names.source_name
+                LEFT JOIN latest_runs ON latest_runs.source_name = source_names.source_name
+                """
+            ).fetchall()
+
+        metrics: dict[str, dict] = {}
+        for row in rows:
+            run_count = int(row["run_count"])
+            discovered_total = int(row["discovered_total"])
+            retained_job_count = int(row["retained_job_count"])
+            metrics[row["source_name"]] = {
+                "run_count": run_count,
+                "success_rate": float(row["success_count"]) / run_count if run_count else 0.0,
+                "last_run_status": row["last_run_status"],
+                "last_run_started_at": (
+                    datetime.fromisoformat(row["last_run_started_at"])
+                    if row["last_run_started_at"]
+                    else None
+                ),
+                "discovered_total": discovered_total,
+                "inserted_total": int(row["inserted_total"]),
+                "updated_total": int(row["updated_total"]),
+                "skipped_total": int(row["skipped_total"]),
+                "retained_job_count": retained_job_count,
+                "yield_rate": retained_job_count / discovered_total if discovered_total else 0.0,
+            }
+        return metrics
+
     def save_searches(self) -> None:
         defaults = {
             "Big Tech Europe": {"employer_class": "big_tech"},
@@ -385,7 +477,7 @@ class Repository:
             "ML Platform": {"role_tags": ["ml", "platform"]},
             "Backend/Kubernetes": {"role_tags": ["backend", "kubernetes"]},
         }
-        with self.connect() as connection:
+        with self._write_lock, self.connect() as connection:
             for name, filters_json in defaults.items():
                 connection.execute(
                     "INSERT OR IGNORE INTO saved_searches (name, filters_json) VALUES (?, ?)",
@@ -398,7 +490,7 @@ class Repository:
         return [{"name": row["name"], "filters": json.loads(row["filters_json"])} for row in rows]
 
     def save_search(self, name: str, filters: dict) -> dict:
-        with self.connect() as connection:
+        with self._write_lock, self.connect() as connection:
             connection.execute(
                 """
                 INSERT INTO saved_searches (name, filters_json)

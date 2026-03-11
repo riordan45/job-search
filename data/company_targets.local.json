@@ -208,5 +208,40 @@
     "max_pages": null,
     "limit": null,
     "jobs": []
+  },
+  {
+    "name": "amazon",
+    "company_name": "Amazon",
+    "adapter": "amazon_jobs",
+    "country": "DE",
+    "employer_class": "big_tech",
+    "source_kind": "direct_company_page",
+    "enabled": true,
+    "priority_weight": 6,
+    "careers_url": "https://www.amazon.jobs/en/",
+    "board_token": null,
+    "company_slug": null,
+    "company_identifier": null,
+    "job_board_name": null,
+    "api_url": null,
+    "domain": null,
+    "queries": [
+      "software engineer",
+      "software development engineer",
+      "machine learning",
+      "applied scientist"
+    ],
+    "search_locations": null,
+    "target_country_codes": [
+      "DEU",
+      "CHE",
+      "NLD",
+      "ROU"
+    ],
+    "target_country_names": null,
+    "max_pages": 10,
+    "page_size": 10,
+    "limit": null,
+    "jobs": []
   }
 ]

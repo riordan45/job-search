@@ -20,15 +20,22 @@ def load_json_config(name: str) -> list[dict]:
 
 @lru_cache
 def load_company_targets() -> list[dict]:
-    base_targets = load_json_config("company_targets.json")
-    return base_targets + load_local_company_targets()
+    merged: dict[str, dict] = {}
+    for target in load_json_config("company_targets.json"):
+        normalized = _normalize_target(target)
+        merged[normalized["name"]] = normalized
+    for target in load_local_company_targets():
+        normalized = _normalize_target(target)
+        merged[normalized["name"]] = normalized
+    return list(merged.values())
 
 
 def load_active_company_targets(*, include_demo: bool = False) -> list[dict]:
     targets = load_company_targets()
+    active = [target for target in targets if target.get("enabled", True)]
     if include_demo:
-        return targets
-    return [target for target in targets if not target.get("is_demo")]
+        return active
+    return [target for target in active if not target.get("is_demo")]
 
 
 def load_local_company_targets() -> list[dict]:
@@ -38,6 +45,7 @@ def load_local_company_targets() -> list[dict]:
 
 
 def save_local_company_target(target: dict) -> dict:
+    target = _normalize_target(target)
     targets = load_local_company_targets()
     targets = [item for item in targets if item["name"] != target["name"]]
     targets.append(target)
@@ -56,3 +64,9 @@ def load_profile() -> dict:
 def save_profile(profile: dict) -> dict:
     LOCAL_PROFILE_PATH.write_text(json.dumps(profile, indent=2) + "\n")
     return profile
+
+
+def _normalize_target(target: dict) -> dict:
+    normalized = dict(target)
+    normalized["enabled"] = bool(normalized.get("enabled", True))
+    return normalized

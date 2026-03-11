@@ -112,6 +112,28 @@ class SourceRunRecord(BaseModel):
     error_text: str | None = None
 
 
+class SourceRecord(BaseModel):
+    name: str
+    company_name: str
+    adapter: str
+    country: Country
+    employer_class: EmployerClass
+    priority_weight: int = 3
+    careers_url: str
+    enabled: bool = True
+    source_kind: str | None = None
+    run_count: int = 0
+    success_rate: float = 0.0
+    last_run_status: str | None = None
+    last_run_started_at: datetime | None = None
+    discovered_total: int = 0
+    inserted_total: int = 0
+    updated_total: int = 0
+    skipped_total: int = 0
+    retained_job_count: int = 0
+    yield_rate: float = 0.0
+
+
 class ListResponse(BaseModel):
     items: list[Any]
 
@@ -128,12 +150,21 @@ class SourceConfigCreate(BaseModel):
     country: Country
     employer_class: EmployerClass
     source_kind: str | None = None
+    enabled: bool = True
     priority_weight: int = 3
     careers_url: str
     board_token: str | None = None
     company_slug: str | None = None
     company_identifier: str | None = None
+    job_board_name: str | None = None
+    api_url: str | None = None
+    domain: str | None = None
+    queries: list[str] | None = None
+    search_locations: list[str] | None = None
+    target_country_codes: list[str] | None = None
+    target_country_names: list[str] | None = None
     max_pages: int | None = None
+    page_size: int | None = None
     limit: int | None = None
     jobs: list[dict[str, Any]] = Field(default_factory=list)
 

@@ -1,17 +1,31 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import os
+from concurrent.futures import ThreadPoolExecutor
 
 from job_search.adapters import (
+    AshbyAdapter,
     AmazonJobsAdapter,
     AppleJobsAdapter,
     ArbeitnowAdapter,
+    AsmlJobsAdapter,
+    BookingJobsAdapter,
+    EightfoldAdapter,
     GoogleCareersAdapter,
     GreenhouseAdapter,
+    JaneStreetJobsAdapter,
     LeverAdapter,
+    MetaCareersAdapter,
+    MicrosoftCareersAdapter,
     MockAdapter,
+    RevolutJobsAdapter,
     SmartRecruitersAdapter,
+    SpotifyJobsAdapter,
+    UberJobsAdapter,
+    WiseJobsAdapter,
     WorkdayAdapter,
+    ZalandoJobsAdapter,
 )
 from job_search.config import load_active_company_targets, load_company_targets, load_profile
 from job_search.enums import EmployerClass
@@ -20,15 +34,27 @@ from job_search.scoring import matches_search_profile, score_job
 
 
 ADAPTERS = {
+    "ashby": AshbyAdapter,
     "amazon_jobs": AmazonJobsAdapter,
     "apple_jobs": AppleJobsAdapter,
     "arbeitnow": ArbeitnowAdapter,
+    "asml_jobs": AsmlJobsAdapter,
+    "booking_jobs": BookingJobsAdapter,
+    "eightfold": EightfoldAdapter,
     "google_careers": GoogleCareersAdapter,
     "greenhouse": GreenhouseAdapter,
+    "jane_street_jobs": JaneStreetJobsAdapter,
     "lever": LeverAdapter,
+    "meta_careers": MetaCareersAdapter,
+    "microsoft_careers": MicrosoftCareersAdapter,
     "mock": MockAdapter,
+    "revolut_jobs": RevolutJobsAdapter,
     "smartrecruiters": SmartRecruitersAdapter,
+    "spotify_jobs": SpotifyJobsAdapter,
+    "uber_jobs": UberJobsAdapter,
+    "wise_jobs": WiseJobsAdapter,
     "workday": WorkdayAdapter,
+    "zalando_jobs": ZalandoJobsAdapter,
 }
 
 
@@ -48,13 +74,21 @@ class IngestionService:
 
     def run(self, source_names: list[str] | None = None) -> list[IngestionSummary]:
         self.profile = load_profile()
-        summaries: list[IngestionSummary] = []
         source_configs = load_company_targets() if source_names else load_active_company_targets()
-        for source_config in source_configs:
-            if source_names and source_config["name"] not in source_names:
-                continue
-            summaries.append(self._run_source(source_config))
-        return summaries
+        selected_sources = [
+            source_config
+            for source_config in source_configs
+            if not source_names or source_config["name"] in source_names
+        ]
+        if not selected_sources:
+            return []
+        if len(selected_sources) == 1:
+            return [self._run_source(selected_sources[0])]
+
+        max_workers = _worker_count(len(selected_sources))
+        with ThreadPoolExecutor(max_workers=max_workers, thread_name_prefix="job-search-source") as executor:
+            futures = [executor.submit(self._run_source, source_config) for source_config in selected_sources]
+            return [future.result() for future in futures]
 
     def _run_source(self, source_config: dict) -> IngestionSummary:
         run_id = self.repository.create_run(source_config["name"])
@@ -96,3 +130,13 @@ class IngestionService:
                 error_text=str(exc),
             )
         return summary
+
+
+def _worker_count(source_count: int) -> int:
+    configured = os.getenv("JOB_SEARCH_INGEST_WORKERS")
+    if configured:
+        try:
+            return max(1, min(source_count, int(configured)))
+        except ValueError:
+            pass
+    return max(1, min(source_count, 6))

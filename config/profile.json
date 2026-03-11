@@ -2,6 +2,8 @@
   "target_countries": ["CH", "DE", "NL", "RO"],
   "priority_keywords": [
     "machine learning",
+    "applied scientist",
+    "forward deployed engineer",
     "backend",
     "python",
     "distributed systems",
@@ -11,6 +13,9 @@
     "full stack",
     "api",
     "data pipeline",
+    "research engineer",
+    "inference",
+    "training systems",
     "quant",
     "quantitative",
     "trading"
@@ -25,11 +30,14 @@
   ],
   "required_role_tags_any": [
     "ml",
+    "applied_scientist",
     "backend",
     "full_stack",
+    "forward_deployment",
     "platform",
     "kubernetes",
     "llm_infra",
+    "research_engineering",
     "distributed_systems",
     "data",
     "finance"

@@ -1,5 +1,55 @@
 [
   {
+    "name": "asml",
+    "company_name": "ASML",
+    "adapter": "asml_jobs",
+    "country": "NL",
+    "employer_class": "enterprise",
+    "source_kind": "direct_company_page",
+    "priority_weight": 6,
+    "careers_url": "https://www.asml.com/en/careers/find-your-job",
+    "enabled": true
+  },
+  {
+    "name": "meta",
+    "company_name": "Meta",
+    "adapter": "meta_careers",
+    "country": "CH",
+    "employer_class": "big_tech",
+    "source_kind": "direct_company_page",
+    "priority_weight": 6,
+    "careers_url": "https://www.metacareers.com/jobsearch/",
+    "target_country_names": [
+      "Switzerland",
+      "Germany",
+      "Netherlands",
+      "Romania"
+    ],
+    "enabled": true
+  },
+  {
+    "name": "spotify",
+    "company_name": "Spotify",
+    "adapter": "spotify_jobs",
+    "country": "DE",
+    "employer_class": "big_tech",
+    "source_kind": "direct_company_page",
+    "priority_weight": 6,
+    "careers_url": "https://www.lifeatspotify.com/jobs",
+    "enabled": true
+  },
+  {
+    "name": "jane-street",
+    "company_name": "Jane Street",
+    "adapter": "jane_street_jobs",
+    "country": "NL",
+    "employer_class": "finance",
+    "source_kind": "direct_company_page",
+    "priority_weight": 6,
+    "careers_url": "https://www.janestreet.com/join-jane-street/open-roles/",
+    "enabled": true
+  },
+  {
     "name": "arbeitnow-de",
     "company_name": "Arbeitnow",
     "adapter": "arbeitnow",
@@ -7,7 +57,8 @@
     "employer_class": "other",
     "priority_weight": 2,
     "careers_url": "https://www.arbeitnow.com/",
-    "max_pages": 2
+    "max_pages": 2,
+    "enabled": false
   },
   {
     "name": "demo-google",
@@ -28,7 +79,8 @@
         "description_text": "Build LLM infrastructure, backend APIs, and distributed systems on Kubernetes.",
         "requirements_text": "Python, machine learning systems, distributed systems, Kubernetes."
       }
-    ]
+    ],
+    "enabled": true
   },
   {
     "name": "google",
@@ -40,8 +92,95 @@
     "priority_weight": 6,
     "careers_url": "https://www.google.com/about/careers/applications/jobs/results/",
     "query": "software engineer",
-    "search_locations": ["Switzerland", "Germany", "Netherlands", "Romania"],
-    "max_pages": 3
+    "search_locations": [
+      "Switzerland",
+      "Germany",
+      "Netherlands",
+      "Romania"
+    ],
+    "max_pages": 3,
+    "enabled": true
+  },
+  {
+    "name": "microsoft",
+    "company_name": "Microsoft",
+    "adapter": "eightfold",
+    "country": "CH",
+    "employer_class": "big_tech",
+    "source_kind": "direct_company_page",
+    "priority_weight": 6,
+    "careers_url": "https://apply.careers.microsoft.com/careers",
+    "domain": "microsoft.com",
+    "page_size": 10,
+    "max_pages": 5,
+    "search_locations": [
+      "Switzerland",
+      "Germany",
+      "Netherlands",
+      "Romania"
+    ],
+    "enabled": true
+  },
+  {
+    "name": "booking",
+    "company_name": "Booking.com",
+    "adapter": "booking_jobs",
+    "country": "NL",
+    "employer_class": "enterprise",
+    "source_kind": "direct_company_page",
+    "priority_weight": 6,
+    "careers_url": "https://jobs.booking.com/booking/jobs/locations",
+    "page_size": 10,
+    "max_pages": 8,
+    "search_locations": [
+      "Switzerland",
+      "Germany",
+      "Netherlands",
+      "Romania"
+    ],
+    "enabled": true
+  },
+  {
+    "name": "revolut",
+    "company_name": "Revolut",
+    "adapter": "revolut_jobs",
+    "country": "RO",
+    "employer_class": "finance",
+    "source_kind": "direct_company_page",
+    "priority_weight": 6,
+    "careers_url": "https://www.revolut.com/careers/",
+    "target_country_names": [
+      "Switzerland",
+      "Germany",
+      "Netherlands",
+      "Romania"
+    ],
+    "enabled": true
+  },
+  {
+    "name": "uber",
+    "company_name": "Uber",
+    "adapter": "uber_jobs",
+    "country": "NL",
+    "employer_class": "big_tech",
+    "source_kind": "direct_company_page",
+    "priority_weight": 6,
+    "careers_url": "https://www.uber.com/careers/list/",
+    "queries": [
+      "software",
+      "machine learning",
+      "applied scientist",
+      "data scientist"
+    ],
+    "target_country_codes": [
+      "CHE",
+      "DEU",
+      "NLD",
+      "ROU"
+    ],
+    "page_size": 10,
+    "max_pages": 5,
+    "enabled": true
   },
   {
     "name": "amazon",
@@ -58,9 +197,15 @@
       "machine learning",
       "applied scientist"
     ],
-    "target_country_codes": ["DEU", "CHE", "NLD", "ROU"],
+    "target_country_codes": [
+      "DEU",
+      "CHE",
+      "NLD",
+      "ROU"
+    ],
     "page_size": 10,
-    "max_pages": 10
+    "max_pages": 10,
+    "enabled": true
   },
   {
     "name": "stripe",
@@ -70,7 +215,8 @@
     "country": "NL",
     "employer_class": "big_tech",
     "priority_weight": 5,
-    "careers_url": "https://stripe.com/jobs"
+    "careers_url": "https://stripe.com/jobs",
+    "enabled": true
   },
   {
     "name": "demo-datadog",
@@ -91,7 +237,8 @@
         "description_text": "Work on backend platform systems, APIs, observability, and cloud infrastructure.",
         "requirements_text": "Python or Go, distributed systems, backend services."
       }
-    ]
+    ],
+    "enabled": true
   },
   {
     "name": "apple",
@@ -102,7 +249,8 @@
     "source_kind": "direct_company_page",
     "priority_weight": 6,
     "careers_url": "https://jobs.apple.com/en-us",
-    "max_pages": 20
+    "max_pages": 20,
+    "enabled": true
   },
   {
     "name": "datadog",
@@ -112,7 +260,8 @@
     "country": "DE",
     "employer_class": "enterprise",
     "priority_weight": 4,
-    "careers_url": "https://careers.datadoghq.com/"
+    "careers_url": "https://careers.datadoghq.com/",
+    "enabled": true
   },
   {
     "name": "mongodb",
@@ -122,7 +271,8 @@
     "country": "DE",
     "employer_class": "enterprise",
     "priority_weight": 4,
-    "careers_url": "https://www.mongodb.com/careers"
+    "careers_url": "https://www.mongodb.com/careers",
+    "enabled": true
   },
   {
     "name": "elastic",
@@ -132,7 +282,8 @@
     "country": "DE",
     "employer_class": "enterprise",
     "priority_weight": 4,
-    "careers_url": "https://jobs.elastic.co/"
+    "careers_url": "https://jobs.elastic.co/",
+    "enabled": true
   },
   {
     "name": "cloudflare",
@@ -142,7 +293,8 @@
     "country": "DE",
     "employer_class": "big_tech",
     "priority_weight": 4,
-    "careers_url": "https://www.cloudflare.com/careers/"
+    "careers_url": "https://www.cloudflare.com/careers/",
+    "enabled": true
   },
   {
     "name": "demo-optiver",
@@ -163,7 +315,8 @@
         "description_text": "Build low-latency backend services and data pipelines for trading systems.",
         "requirements_text": "Backend engineering, Python, data systems."
       }
-    ]
+    ],
+    "enabled": true
   },
   {
     "name": "adyen",
@@ -173,7 +326,8 @@
     "country": "NL",
     "employer_class": "finance",
     "priority_weight": 5,
-    "careers_url": "https://www.adyen.com/careers"
+    "careers_url": "https://www.adyen.com/careers",
+    "enabled": true
   },
   {
     "name": "n26",
@@ -183,7 +337,8 @@
     "country": "DE",
     "employer_class": "finance",
     "priority_weight": 5,
-    "careers_url": "https://n26.com/en-eu/careers"
+    "careers_url": "https://n26.com/en-eu/careers",
+    "enabled": true
   },
   {
     "name": "imc",
@@ -193,7 +348,8 @@
     "country": "NL",
     "employer_class": "finance",
     "priority_weight": 5,
-    "careers_url": "https://www.imc.com/eu/careers/"
+    "careers_url": "https://www.imc.com/eu/careers/",
+    "enabled": true
   },
   {
     "name": "delivery-hero",
@@ -204,7 +360,8 @@
     "employer_class": "enterprise",
     "priority_weight": 3,
     "careers_url": "https://careers.deliveryhero.com/",
-    "limit": 100
+    "limit": 100,
+    "enabled": true
   },
   {
     "name": "remote",
@@ -214,19 +371,353 @@
     "country": "RO",
     "employer_class": "startup",
     "priority_weight": 3,
-    "careers_url": "https://remote.com/careers"
+    "careers_url": "https://remote.com/careers",
+    "enabled": true
   },
   {
     "name": "nvidia",
     "company_name": "NVIDIA",
-    "adapter": "workday",
+    "adapter": "eightfold",
     "country": "CH",
     "employer_class": "big_tech",
     "source_kind": "direct_company_page",
     "priority_weight": 6,
-    "careers_url": "https://nvidia.wd5.myworkdayjobs.com/NVIDIAExternalCareerSite",
-    "api_url": "https://nvidia.wd5.myworkdayjobs.com/wday/cxs/nvidia/NVIDIAExternalCareerSite/jobs",
-    "limit": 20,
-    "target_country_names": ["Germany", "Netherlands", "Romania", "Switzerland"]
+    "careers_url": "https://jobs.nvidia.com/careers",
+    "domain": "nvidia.com",
+    "search_locations": [
+      "Zurich, ZH, Switzerland",
+      "Berlin, Germany",
+      "Munich, Germany",
+      "Amsterdam, Netherlands",
+      "Bucharest, Romania",
+      "Iasi, Romania"
+    ],
+    "page_size": 10,
+    "max_pages": 4,
+    "enabled": true
+  },
+  {
+    "name": "contentful",
+    "company_name": "Contentful",
+    "adapter": "greenhouse",
+    "country": "DE",
+    "employer_class": "enterprise",
+    "priority_weight": 4,
+    "careers_url": "https://www.contentful.com/careers/",
+    "board_token": "contentful",
+    "company_slug": null,
+    "company_identifier": null,
+    "max_pages": null,
+    "limit": null,
+    "jobs": [],
+    "enabled": true
+  },
+  {
+    "name": "getyourguide",
+    "company_name": "GetYourGuide",
+    "adapter": "greenhouse",
+    "country": "DE",
+    "employer_class": "startup",
+    "priority_weight": 4,
+    "careers_url": "https://www.getyourguide.careers/",
+    "board_token": "getyourguide",
+    "company_slug": null,
+    "company_identifier": null,
+    "max_pages": null,
+    "limit": null,
+    "jobs": [],
+    "enabled": true
+  },
+  {
+    "name": "celonis",
+    "company_name": "Celonis",
+    "adapter": "greenhouse",
+    "country": "DE",
+    "employer_class": "enterprise",
+    "priority_weight": 5,
+    "careers_url": "https://www.celonis.com/careers/",
+    "board_token": "celonis",
+    "company_slug": null,
+    "company_identifier": null,
+    "max_pages": null,
+    "limit": null,
+    "jobs": [],
+    "enabled": true
+  },
+  {
+    "name": "bitpanda",
+    "company_name": "Bitpanda",
+    "adapter": "greenhouse",
+    "country": "DE",
+    "employer_class": "finance",
+    "priority_weight": 4,
+    "careers_url": "https://www.bitpanda.com/en/careers",
+    "board_token": "bitpanda",
+    "company_slug": null,
+    "company_identifier": null,
+    "max_pages": null,
+    "limit": null,
+    "jobs": [],
+    "enabled": true
+  },
+  {
+    "name": "truelayer",
+    "company_name": "TrueLayer",
+    "adapter": "greenhouse",
+    "country": "NL",
+    "employer_class": "finance",
+    "priority_weight": 4,
+    "careers_url": "https://truelayer.com/careers/",
+    "board_token": "truelayer",
+    "company_slug": null,
+    "company_identifier": null,
+    "max_pages": null,
+    "limit": null,
+    "jobs": [],
+    "enabled": true
+  },
+  {
+    "name": "flow-traders",
+    "company_name": "Flow Traders",
+    "adapter": "greenhouse",
+    "country": "NL",
+    "employer_class": "finance",
+    "priority_weight": 5,
+    "careers_url": "https://www.flowtraders.com/careers/",
+    "board_token": "flowtraders",
+    "company_slug": null,
+    "company_identifier": null,
+    "max_pages": null,
+    "limit": null,
+    "jobs": [],
+    "enabled": true
+  },
+  {
+    "name": "wayve",
+    "company_name": "Wayve",
+    "adapter": "greenhouse",
+    "country": "DE",
+    "employer_class": "startup",
+    "priority_weight": 4,
+    "careers_url": "https://wayve.ai/careers/",
+    "board_token": "wayve",
+    "company_slug": null,
+    "company_identifier": null,
+    "max_pages": null,
+    "limit": null,
+    "jobs": [],
+    "enabled": true
+  },
+  {
+    "name": "commercetools",
+    "company_name": "commercetools",
+    "adapter": "greenhouse",
+    "country": "DE",
+    "employer_class": "enterprise",
+    "priority_weight": 4,
+    "careers_url": "https://commercetools.com/careers/",
+    "board_token": "commercetools",
+    "company_slug": null,
+    "company_identifier": null,
+    "max_pages": null,
+    "limit": null,
+    "jobs": [],
+    "enabled": true
+  },
+  {
+    "name": "spryker",
+    "company_name": "Spryker",
+    "adapter": "greenhouse",
+    "country": "DE",
+    "employer_class": "enterprise",
+    "priority_weight": 4,
+    "careers_url": "https://spryker.com/en/careers/",
+    "board_token": "spryker",
+    "company_slug": null,
+    "company_identifier": null,
+    "max_pages": null,
+    "limit": null,
+    "jobs": [],
+    "enabled": true
+  },
+  {
+    "name": "mirakl",
+    "company_name": "Mirakl",
+    "adapter": "greenhouse",
+    "country": "NL",
+    "employer_class": "enterprise",
+    "priority_weight": 3,
+    "careers_url": "https://www.mirakl.com/company/careers/",
+    "board_token": "mirakl",
+    "company_slug": null,
+    "company_identifier": null,
+    "max_pages": null,
+    "limit": null,
+    "jobs": [],
+    "enabled": true
+  },
+  {
+    "name": "sumup",
+    "company_name": "SumUp",
+    "adapter": "greenhouse",
+    "country": "DE",
+    "employer_class": "finance",
+    "priority_weight": 5,
+    "careers_url": "https://careers.sumup.com/",
+    "board_token": "sumup",
+    "company_slug": null,
+    "company_identifier": null,
+    "max_pages": null,
+    "limit": null,
+    "jobs": [],
+    "enabled": true
+  },
+  {
+    "name": "figma",
+    "company_name": "Figma",
+    "adapter": "greenhouse",
+    "country": "NL",
+    "employer_class": "big_tech",
+    "priority_weight": 4,
+    "careers_url": "https://www.figma.com/careers/",
+    "board_token": "figma",
+    "company_slug": null,
+    "company_identifier": null,
+    "max_pages": null,
+    "limit": null,
+    "jobs": [],
+    "enabled": true
+  },
+  {
+    "name": "intercom",
+    "company_name": "Intercom",
+    "adapter": "greenhouse",
+    "country": "DE",
+    "employer_class": "enterprise",
+    "priority_weight": 4,
+    "careers_url": "https://www.intercom.com/careers",
+    "board_token": "intercom",
+    "company_slug": null,
+    "company_identifier": null,
+    "max_pages": null,
+    "limit": null,
+    "jobs": [],
+    "enabled": true
+  },
+  {
+    "name": "gitlab",
+    "company_name": "GitLab",
+    "adapter": "greenhouse",
+    "country": "NL",
+    "employer_class": "big_tech",
+    "priority_weight": 4,
+    "careers_url": "https://about.gitlab.com/jobs/",
+    "board_token": "gitlab",
+    "company_slug": null,
+    "company_identifier": null,
+    "max_pages": null,
+    "limit": null,
+    "jobs": [],
+    "enabled": true
+  },
+  {
+    "name": "databricks",
+    "company_name": "Databricks",
+    "adapter": "greenhouse",
+    "board_token": "databricks",
+    "country": "DE",
+    "employer_class": "big_tech",
+    "priority_weight": 6,
+    "careers_url": "https://www.databricks.com/company/careers",
+    "enabled": true
+  },
+  {
+    "name": "mollie",
+    "company_name": "Mollie",
+    "adapter": "ashby",
+    "job_board_name": "Mollie",
+    "country": "NL",
+    "employer_class": "finance",
+    "priority_weight": 5,
+    "careers_url": "https://jobs.mollie.com/",
+    "enabled": true
+  },
+  {
+    "name": "palantir",
+    "company_name": "Palantir",
+    "adapter": "lever",
+    "company_slug": "palantir",
+    "country": "DE",
+    "employer_class": "big_tech",
+    "priority_weight": 6,
+    "careers_url": "https://www.palantir.com/careers/",
+    "enabled": true
+  },
+  {
+    "name": "wise",
+    "company_name": "Wise",
+    "adapter": "wise_jobs",
+    "country": "NL",
+    "employer_class": "finance",
+    "source_kind": "direct_company_page",
+    "priority_weight": 5,
+    "careers_url": "https://www.wise.jobs",
+    "enabled": true
+  },
+  {
+    "name": "zalando",
+    "company_name": "Zalando",
+    "adapter": "zalando_jobs",
+    "country": "DE",
+    "employer_class": "enterprise",
+    "source_kind": "direct_company_page",
+    "priority_weight": 5,
+    "careers_url": "https://jobs.zalando.com/en/jobs",
+    "jobs_url": "https://jobs.zalando.com/en/jobs?category=Software+Engineering+-+Backend&category=Software+Engineering+-+Data&category=Software+Engineering+-+Frontend&category=Software+Engineering+-+Full+Stack&category=Software+Engineering+-+Leadership&category=Software+Engineering+-+Machine+Learning&category=Software+Engineering+-+Mobile&category=Software+Engineering+-+Principal+Engineering",
+    "enabled": true
+  },
+  {
+    "name": "snowflake",
+    "company_name": "Snowflake",
+    "adapter": "greenhouse",
+    "board_token": "snowflake",
+    "country": "DE",
+    "employer_class": "big_tech",
+    "priority_weight": 6,
+    "careers_url": "https://careers.snowflake.com/",
+    "enabled": true
+  },
+  {
+    "name": "deepmind",
+    "company_name": "DeepMind",
+    "adapter": "greenhouse",
+    "board_token": "deepmind",
+    "country": "DE",
+    "employer_class": "big_tech",
+    "priority_weight": 6,
+    "careers_url": "https://deepmind.com/careers",
+    "enabled": true
+  },
+  {
+    "name": "openai",
+    "company_name": "OpenAI",
+    "adapter": "ashby",
+    "job_board_name": "openai",
+    "country": "DE",
+    "employer_class": "big_tech",
+    "priority_weight": 6,
+    "careers_url": "https://openai.com/careers/",
+    "enabled": true
+  },
+  {
+    "name": "checkout",
+    "company_name": "Checkout.com",
+    "adapter": "ashby",
+    "job_board_name": "checkoutcom",
+    "country": "NL",
+    "employer_class": "finance",
+    "priority_weight": 5,
+    "careers_url": "https://www.checkout.com/careers",
+    "enabled": true
   }
 ]

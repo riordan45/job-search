@@ -5,6 +5,7 @@ description = "Local-first Europe-focused job search tracker for ML and software
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+  "cloudscraper>=1.2.71",
   "fastapi>=0.115.0,<1.0.0",
   "pydantic>=2.8.0,<3.0.0",
   "uvicorn>=0.30.0,<1.0.0",

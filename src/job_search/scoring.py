@@ -9,13 +9,32 @@ from job_search.models import NormalizedJob
 
 ROLE_KEYWORDS = {
     RoleTag.ML: ["machine learning", "ml engineer", "mlops", "ai engineer"],
+    RoleTag.APPLIED_SCIENTIST: [
+        "applied scientist",
+        "applied science",
+        "applied machine learning",
+        "research scientist",
+        "scientist, machine learning",
+    ],
     RoleTag.BACKEND: ["backend", "distributed systems", "api", "python", "golang"],
+    RoleTag.FORWARD_DEPLOYMENT: [
+        "forward deployed engineer",
+        "forward deployment engineer",
+        "forward deploy engineer",
+        "field engineer",
+        "deployment strategist",
+    ],
     RoleTag.FULL_STACK: ["full stack", "frontend", "react", "typescript"],
     RoleTag.PLATFORM: ["platform", "infrastructure", "developer platform", "sre"],
     RoleTag.KUBERNETES: ["kubernetes", "k8s", "helm", "container orchestration"],
     RoleTag.LLM_INFRA: ["llm", "rag", "inference", "prompt", "agent"],
+    RoleTag.RESEARCH_ENGINEERING: [
+        "research engineer",
+        "research engineering",
+        "applied research engineer",
+    ],
     RoleTag.DISTRIBUTED_SYSTEMS: ["distributed systems", "streaming", "messaging", "kafka"],
-    RoleTag.DATA: ["data pipeline", "etl", "analytics", "warehouse"],
+    RoleTag.DATA: ["data pipeline", "etl", "analytics", "warehouse", "model training", "feature store"],
     RoleTag.FINANCE: [
         "trading",
         "quant",
@@ -95,6 +114,96 @@ GLOBAL_SCOPE_TERMS = [
     "remote-anywhere",
 ]
 
+BROAD_TECH_ROLE_TERMS = [
+    "software engineer",
+    "software developer",
+    "machine learning",
+    "ml engineer",
+    "applied scientist",
+    "research scientist",
+    "research engineer",
+    "forward deployed engineer",
+    "forward deployment engineer",
+    "backend engineer",
+    "full stack",
+    "platform engineer",
+    "site reliability engineer",
+    "sre",
+    "data engineer",
+    "distributed systems",
+    "systems engineer",
+    "compiler engineer",
+    "infrastructure engineer",
+    "quant",
+    "quantitative",
+]
+
+LANGUAGE_PATTERNS = {
+    "English": [
+        r"\benglish proficiency (?:is|will be) (?:a )?requirement\b",
+        r"\benglish (?:is|are) required\b",
+        r"\bmust (?:speak|write|read) english\b",
+        r"\bfluent in english\b",
+        r"\bbusiness[- ]?fluent english\b",
+        r"\bprofessional english\b",
+    ],
+    "German": [
+        r"\bgerman (?:is|are) required\b",
+        r"\bgerman fluency\b",
+        r"\bgerman proficiency\b",
+        r"\bmust (?:speak|write|read) german\b",
+        r"\bfluent in german\b",
+        r"\bbusiness[- ]?fluent german\b",
+    ],
+    "Dutch": [
+        r"\bdutch (?:is|are) required\b",
+        r"\bdutch fluency\b",
+        r"\bdutch proficiency\b",
+        r"\bmust (?:speak|write|read) dutch\b",
+        r"\bfluent in dutch\b",
+        r"\bbusiness[- ]?fluent dutch\b",
+    ],
+    "Romanian": [
+        r"\bromanian (?:is|are) required\b",
+        r"\bromanian fluency\b",
+        r"\bromanian proficiency\b",
+        r"\bmust (?:speak|write|read) romanian\b",
+        r"\bfluent in romanian\b",
+        r"\bbusiness[- ]?fluent romanian\b",
+    ],
+    "French": [
+        r"\bfrench (?:is|are) required\b",
+        r"\bfrench fluency\b",
+        r"\bfrench proficiency\b",
+        r"\bmust (?:speak|write|read) french\b",
+        r"\bfluent in french\b",
+        r"\bbusiness[- ]?fluent french\b",
+    ],
+}
+
+LANGUAGE_PREFERRED_PATTERNS = {
+    "English": [
+        r"\benglish (?:is|would be) preferred\b",
+        r"\benglish (?:is|would be) a plus\b",
+    ],
+    "German": [
+        r"\bgerman (?:is|would be) preferred\b",
+        r"\bgerman (?:is|would be) a plus\b",
+    ],
+    "Dutch": [
+        r"\bdutch (?:is|would be) preferred\b",
+        r"\bdutch (?:is|would be) a plus\b",
+    ],
+    "Romanian": [
+        r"\bromanian (?:is|would be) preferred\b",
+        r"\bromanian (?:is|would be) a plus\b",
+    ],
+    "French": [
+        r"\bfrench (?:is|would be) preferred\b",
+        r"\bfrench (?:is|would be) a plus\b",
+    ],
+}
+
 
 def detect_country(text: str, default: str | None = None) -> str | None:
     lowered = text.lower()
@@ -164,14 +273,27 @@ def matches_search_profile(job: NormalizedJob, profile: dict) -> bool:
         return False
 
     text = " ".join([job.title, job.description_text, job.requirements_text]).lower()
-    if any(term.lower() in text for term in profile.get("excluded_keywords", [])):
+    if any(_contains_alias(text, term.lower()) for term in profile.get("excluded_keywords", [])):
         return False
 
     required_tags = set(profile.get("required_role_tags_any", []))
     if required_tags and not required_tags.intersection(job.role_tags):
-        return False
+        if not any(_contains_alias(text, term) for term in BROAD_TECH_ROLE_TERMS):
+            return False
 
     return True
+
+
+def extract_language_signals(*parts: str) -> list[str]:
+    text = " ".join(part for part in parts if part).lower()
+    found: list[str] = []
+    for language, patterns in LANGUAGE_PATTERNS.items():
+        if any(re.search(pattern, text) for pattern in patterns):
+            found.append(f"{language} required")
+    for language, patterns in LANGUAGE_PREFERRED_PATTERNS.items():
+        if any(re.search(pattern, text) for pattern in patterns):
+            found.append(f"{language} preferred")
+    return found
 
 
 def score_job(job: NormalizedJob, company_target: dict, profile: dict) -> tuple[float, list[str]]:
@@ -181,6 +303,7 @@ def score_job(job: NormalizedJob, company_target: dict, profile: dict) -> tuple[
     text = " ".join([job.title, job.description_text, job.requirements_text]).lower()
     tags = classify_role_tags(text)
     job.role_tags = tags
+    job.language_signals = extract_language_signals(job.title, job.description_text, job.requirements_text)
     job.source_kind = infer_source_kind(company_target, job.canonical_url)
     job.source_priority = source_truth_priority(company_target, job.canonical_url)
 
@@ -212,7 +335,17 @@ def score_job(job: NormalizedJob, company_target: dict, profile: dict) -> tuple[
         score += min(24, len(overlap) * 4)
         reasons.append(f"profile-match:{len(overlap)}")
 
-    preferred_tags = {"ml", "backend", "platform", "kubernetes", "llm_infra", "distributed_systems"}
+    preferred_tags = {
+        "ml",
+        "applied_scientist",
+        "backend",
+        "forward_deployment",
+        "platform",
+        "kubernetes",
+        "llm_infra",
+        "research_engineering",
+        "distributed_systems",
+    }
     matched_preferred = preferred_tags.intersection(tags)
     if matched_preferred:
         score += len(matched_preferred) * 6
